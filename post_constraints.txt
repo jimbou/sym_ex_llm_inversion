@@ -1,0 +1,2 @@
+result > 2000
+result < 4000

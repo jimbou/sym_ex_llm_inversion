@@ -1,0 +1,6 @@
+z3-solver
+groq
+openai
+tenacity
+python-sat[pblib,aiger]
+requests
