@@ -85,6 +85,56 @@ def find_numeric_min_solution(hard_constraints, soft_constraints, ctx):
     else:
         return None
 
+
+def find_random_near_soft_solution(hard_constraints, soft_constraints, ctx, percentage_range=(0.05, 0.3), tries=5):
+    """
+    Try to find a solution near soft constraints using random fuzzy bands over multiple attempts.
+
+    Args:
+        hard_constraints: list of Z3 constraints.
+        soft_constraints: dict of variable_name → target numeric value.
+        ctx: dict of variable_name → Z3 variable.
+        percentage_range: (min%, max%) fuzziness for band size per variable.
+        tries: how many randomized attempts to make.
+
+    Returns:
+        Solution dict or None
+    """
+    for _ in range(tries):
+        solver = Solver()
+        solver.add(hard_constraints)
+
+        for var, target in soft_constraints.items():
+            z3_var = ctx[var]
+            pct = random.uniform(*percentage_range)
+
+            if z3_var.sort().name() == "Real":
+                t = float(target)
+                delta = abs(t * pct)
+                low, high = RealVal(t - delta), RealVal(t + delta)
+            else:
+                t = int(float(target))
+                delta = max(1, int(abs(t * pct)))
+                low, high = IntVal(t - delta), IntVal(t + delta)
+
+            solver.add(z3_var >= low, z3_var <= high)
+
+        if solver.check() == sat:
+            m = solver.model()
+            return {str(d): m[d] for d in m}
+
+    return None  # If no satisfiable solution found after all tries
+
+def find_sat_wrapper(hard_constraints, soft_constraints, ctx, random=False):
+    """
+    Wrapper to find a SAT solution, either exact or random.
+    """
+    if random:
+        return find_random_near_soft_solution(hard_constraints, soft_constraints, ctx)
+    else:
+        return find_numeric_min_solution(hard_constraints, soft_constraints, ctx)
+
+
 def add_fixed_values_z3_constraints(z3_constraints, fixed_values, ctx, types_dict):
     """
     Adds fixed-value constraints as Z3 expressions to the existing z3_constraints list

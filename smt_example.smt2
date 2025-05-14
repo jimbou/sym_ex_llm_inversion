@@ -1,0 +1,6 @@
+(set-logic QF_AUFBV )
+(declare-fun x () (Array (_ BitVec 32) (_ BitVec 8) ) )
+(declare-fun y () (Array (_ BitVec 32) (_ BitVec 8) ) )
+(assert (and  (=  (_ bv0 64) (concat  (select  x (_ bv7 32) ) (concat  (select  x (_ bv6 32) ) (concat  (select  x (_ bv5 32) ) (concat  (select  x (_ bv4 32) ) (concat  (select  x (_ bv3 32) ) (concat  (select  x (_ bv2 32) ) (concat  (select  x (_ bv1 32) ) (select  x (_ bv0 32) ) ) ) ) ) ) ) ) ) (=  (_ bv0 64) (concat  (select  y (_ bv7 32) ) (concat  (select  y (_ bv6 32) ) (concat  (select  y (_ bv5 32) ) (concat  (select  y (_ bv4 32) ) (concat  (select  y (_ bv3 32) ) (concat  (select  y (_ bv2 32) ) (concat  (select  y (_ bv1 32) ) (select  y (_ bv0 32) ) ) ) ) ) ) ) ) ) ) )
+(check-sat)
+(exit)
