@@ -68,6 +68,15 @@ def get_model(name: str, temperature: float, log_directory: Path = None):
     pl_lab_models = {
         "ali/deepseek-v3"
     }
+
+    ai_302_models={
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "deepseek-r1-aliyun",
+        "deepseek-v3-aliyun",
+        "deepseek-r1-huoshan",
+        "deepseek-v3-huoshan"
+    }
     if name in pl_lab_models:
         return PlLabModel(name, temperature, log_directory)
 
@@ -76,6 +85,9 @@ def get_model(name: str, temperature: float, log_directory: Path = None):
 
     if name in deepseek_models:
         return DeepSeekModel(name, temperature, log_directory)
+    
+    if name in ai_302_models:
+        return AI302Model(name, temperature, log_directory)
 
     qwen_models = {
         "qwq-32b-preview",  # reasoning model
@@ -253,6 +265,29 @@ class PlLabModel(Model):
             temperature=self.temperature
         )
         return response.choices[0].message.content
+    
+class AI302Model(Model):
+    def __init__(self, name, temperature, log_directory):
+        self.log_directory = log_directory
+        if log_directory:
+            self.log_counter = 0
+        self.name = name
+        self.temperature = temperature
+
+        self.client = OpenAI(
+            base_url = "https://api.302.ai/v1/chat/completions",
+            api_key=os.environ.get("API_KEY_302")
+        )
+
+    @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+    def _query(self, prompt):
+        response = self.client.chat.completions.create(
+            model=self.name,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.temperature
+        )
+        return response.choices[0].message.content
+
 class FireworksModel(Model):
     def __init__(self, name, temperature, log_directory):
         self.log_directory = log_directory

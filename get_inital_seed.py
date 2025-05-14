@@ -6,10 +6,10 @@ You are helping solve a constraint satisfaction problem over some code that is p
 The  code is:
 {difficult_part}
 
-The input variables are:
+The input variables with their type are:
 {input_vars}
 
-The output variables are:
+The output variables with their type are:
 {output_vars}
 
 The pre-constraints on the input variables are:
@@ -85,8 +85,10 @@ def extract_seed_values(response_text, input_vars):
 # This function handles the core logic for checking program correctness using a naive entailment approach.
 def get_inital_seed(model, difficult_part, input_vars, output_vars, pre_constraints, post_constraints, pre_candidate, post_candidate):
 #input vars is a set , lets make them string with comma sparated
-    input_vars_str = ', '.join(input_vars)
-    output_vars_str = ', '.join(output_vars)
+   #inputs is a dict of input vars and their type
+   #make a string with the inputs and their type
+    input_vars_str = ', '.join(f"{var} of type {var_type}" for var, var_type in input_vars.items())
+    output_vars_str = ', '.join(f"{var} of type {var_type}" for var, var_type in output_vars.items())
 
     #pre assignment is a dict of variable, vallue pairs
     #turn it into string
@@ -94,7 +96,7 @@ def get_inital_seed(model, difficult_part, input_vars, output_vars, pre_constrai
     post_candidate_str = '\n'.join(f"{var} = {val}" for var, val in post_candidate.items())
 
 
-    prompt = PROMPT.format( difficult_part=difficult_part, input_vars=input_vars_str,  output_vars=output_vars_str, pre_constraints=pre_constraints, post_constraints=post_constraints, pre_candidate=pre_candidate_str, post_candidate=post_candidate_str) 
+    prompt = PROMPT.format(difficult_part=difficult_part, input_vars=input_vars_str, output_vars=output_vars_str, pre_constraints=pre_constraints, post_constraints=post_constraints, pre_candidate=pre_candidate_str, post_candidate=post_candidate_str) 
     
     response = model.query(prompt)
     result = extract_seed_values(response, input_vars)

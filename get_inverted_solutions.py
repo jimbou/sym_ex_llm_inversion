@@ -5,9 +5,16 @@ Given the following C function:
 
 {c_function}
 
-and the target output:
+The input variables with their type are:
+{input_vars}
+
+The output variables with their type are:
+{output_vars}
+
+The target output is:
 
 {target_output}
+
 
 Please predict plausible input values for the function that will produce approximately the given output.
 
@@ -59,8 +66,13 @@ def extract_input_pairs(response_text):
     return inputs
 
 # This function handles the core logic for checking program correctness using a naive entailment approach.
-def inverted_solutions_simple(model, code, target):
+def inverted_solutions_simple(model, code, target, input_vars, output_vars):
+        
+    input_vars_str = ', '.join(f"{var} of type {var_type}" for var, var_type in input_vars.items())
+    output_vars_str = ', '.join(f"{var} of type {var_type}" for var, var_type in output_vars.items())
     prompt = PROMPT.format(c_function=code,
+                            input_vars=input_vars_str,
+                            output_vars=output_vars_str,
                             target_output=target)
     
     response = model.query(prompt)

@@ -4,3 +4,4 @@ openai
 tenacity
 python-sat[pblib,aiger]
 requests
+Levenshtein

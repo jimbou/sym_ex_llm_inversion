@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug with args (venv)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "main.py",  // your main file
+        "console": "integratedTerminal",
+        "args": [
+          "--difficult_func", "difficult_part.c",
+          "--full_code", "example_c.c",
+          "--pre_constraints", "pre_constraints.txt",
+          "--post_constraints", "post_constraints.txt",
+          "--log_folder", "experiment_logs5"
+        ],
+        "env": {
+          "PYTHONPATH": "/home/jim/sym_ex_llm_inversion/venv/bin/python"
+        }
+      }
+    ]
+  }
+  
